@@ -1,0 +1,7 @@
+.git
+.agents
+.vscode
+target
+HELP.md
+*.log
+.env
