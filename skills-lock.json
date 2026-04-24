@@ -11,10 +11,20 @@
       "sourceType": "github",
       "computedHash": "f1b9c6b1277178fc33e5a612761c1cd1cf6ab5f946d05d69d52026d142c0a0c1"
     },
+    "spring-boot-openapi-documentation": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "computedHash": "bdd0f7da4a072d014a9e65235773cc3f38ca0d0925edd5d3fe85ab33b29bcd9d"
+    },
     "spring-boot-security-jwt": {
       "source": "giuseppe-trisciuoglio/developer-kit",
       "sourceType": "github",
       "computedHash": "f04cfa9e9e9cc68eefbfc7eb9e7a8d4f7e23f1a5545894f94aa88ce2dc2fe065"
+    },
+    "spring-boot-testing": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "computedHash": "4e6153fd6eed64dfc6b0f9a2a38ef8e636a88977702a49f3c5691fafcc02d8a8"
     },
     "springboot-security": {
       "source": "affaan-m/everything-claude-code",
