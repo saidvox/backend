@@ -10,7 +10,8 @@ import com.cafedebarrio.backend.mapper.ProductoMapper;
 import com.cafedebarrio.backend.repository.CategoriaRepository;
 import com.cafedebarrio.backend.repository.ProductoRepository;
 import com.cafedebarrio.backend.service.ProductoService;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,21 +34,12 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductoResponse> listarProductos(Long categoriaId, Boolean soloActivos) {
+	public Page<ProductoResponse> listarProductos(Long categoriaId, Boolean soloActivos, Boolean disponible, Pageable pageable) {
 		boolean filtrarActivos = soloActivos == null || soloActivos;
-		List<Producto> productos;
+		boolean filtrarDisponibles = Boolean.TRUE.equals(disponible);
+		Page<Producto> productos = productoRepository.buscarCatalogo(categoriaId, filtrarActivos, filtrarDisponibles, pageable);
 
-		if (categoriaId != null && filtrarActivos) {
-			productos = productoRepository.findByCategoriaIdAndActivoTrueOrderByNombreAsc(categoriaId);
-		} else if (categoriaId == null && filtrarActivos) {
-			productos = productoRepository.findByActivoTrueOrderByNombreAsc();
-		} else {
-			productos = productoRepository.findAll();
-		}
-
-		return productos.stream()
-				.map(productoMapper::toResponse)
-				.toList();
+		return productos.map(productoMapper::toResponse);
 	}
 
 	@Override

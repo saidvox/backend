@@ -48,6 +48,7 @@ Puedes cambiarlas con variables de entorno:
 
 - `GET /api/categorias`
 - `GET /api/productos`
+- `GET /api/productos?categoria=1&disponible=true`
 - `GET /api/productos/{id}`
 - `POST /api/pedidos`
 - `POST /api/auth/login`
@@ -71,3 +72,7 @@ Authorization: Bearer TU_TOKEN
 ```bash
 mvn test
 ```
+
+## Coleccion de endpoints
+
+El archivo `api-collection.http` incluye ejemplos de las rutas publicas y administrativas.

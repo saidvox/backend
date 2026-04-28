@@ -1,0 +1,96 @@
+@baseUrl = http://localhost:8080
+@token = reemplaza_este_valor_con_el_token_del_login
+
+### Health
+GET {{baseUrl}}/actuator/health
+
+### Login administrador
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin12345*"
+}
+
+### Listar categorias
+GET {{baseUrl}}/api/categorias
+
+### Listar productos disponibles en catalogo
+GET {{baseUrl}}/api/productos
+
+### Filtrar productos por categoria
+GET {{baseUrl}}/api/productos?categoria=1
+
+### Filtrar productos activos y con stock disponible
+GET {{baseUrl}}/api/productos?activos=true&disponible=true
+
+### Detalle de producto
+GET {{baseUrl}}/api/productos/1
+
+### Crear producto administrativamente
+POST {{baseUrl}}/api/productos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Cafe Geisha 340g",
+  "descripcion": "Cafe de especialidad con notas florales y citricas.",
+  "precio": 45.50,
+  "stock": 6,
+  "imagenUrl": "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+  "activo": true,
+  "categoriaId": 1
+}
+
+### Editar producto administrativamente
+PUT {{baseUrl}}/api/productos/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Cafe de Altura 250g",
+  "descripcion": "Cafe en grano de tostado medio con notas a chocolate y frutos secos.",
+  "precio": 25.90,
+  "stock": 18,
+  "imagenUrl": "https://images.unsplash.com/photo-1447933601403-0c6688de566e",
+  "activo": true,
+  "categoriaId": 1
+}
+
+### Desactivar producto
+DELETE {{baseUrl}}/api/productos/1
+Authorization: Bearer {{token}}
+
+### Registrar pedido
+POST {{baseUrl}}/api/pedidos
+Content-Type: application/json
+
+{
+  "clienteNombre": "Juan Perez",
+  "celular": "987654321",
+  "direccion": "Av. Los Cafetos 123, Miraflores",
+  "items": [
+    {
+      "productoId": 1,
+      "cantidad": 2
+    }
+  ]
+}
+
+### Listar pedidos administrativamente
+GET {{baseUrl}}/api/pedidos
+Authorization: Bearer {{token}}
+
+### Filtrar pedidos por estado
+GET {{baseUrl}}/api/pedidos?estado=PENDIENTE
+Authorization: Bearer {{token}}
+
+### Actualizar estado de pedido
+PATCH {{baseUrl}}/api/pedidos/1/estado
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "estado": "EN_PREPARACION"
+}

@@ -7,7 +7,6 @@ import com.cafedebarrio.backend.exception.ApiErrorResponse;
 import com.cafedebarrio.backend.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,12 +39,12 @@ public class ProductoController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Listar productos", description = "Lista productos del catalogo con filtros opcionales por categoria y estado activo.")
+	@Operation(summary = "Listar productos", description = "Lista productos del catalogo con filtros opcionales por categoria, estado activo y disponibilidad de stock.")
 	@ApiResponses({
 			@ApiResponse(
 					responseCode = "200",
 					description = "Productos obtenidos correctamente",
-					content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductoResponse.class)))
+					content = @Content(schema = @Schema(implementation = org.springframework.data.domain.Page.class))
 			),
 			@ApiResponse(
 					responseCode = "500",
@@ -54,13 +52,20 @@ public class ProductoController {
 					content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
 			)
 	})
-	public List<ProductoResponse> listarProductos(
+	public org.springframework.data.domain.Page<ProductoResponse> listarProductos(
 			@Parameter(description = "Id de la categoria para filtrar productos", example = "1")
 			@RequestParam(required = false) Long categoria,
 			@Parameter(description = "Indica si solo se deben listar productos activos", example = "true")
-			@RequestParam(required = false) Boolean activos
+			@RequestParam(required = false) Boolean activos,
+			@Parameter(description = "Indica si solo se deben listar productos con stock mayor a cero", example = "true")
+			@RequestParam(required = false) Boolean disponible,
+			@Parameter(description = "Numero de pagina (comienza en 0)", example = "0")
+			@RequestParam(defaultValue = "0") int page,
+			@Parameter(description = "Tamaño de pagina", example = "10")
+			@RequestParam(defaultValue = "10") int size
 	) {
-		return productoService.listarProductos(categoria, activos);
+		org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+		return productoService.listarProductos(categoria, activos, disponible, pageable);
 	}
 
 	@GetMapping("/{id}")

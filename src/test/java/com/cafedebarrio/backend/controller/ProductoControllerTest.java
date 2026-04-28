@@ -14,6 +14,10 @@ import com.cafedebarrio.backend.service.ProductoService;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -23,6 +27,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(ProductoController.class)
@@ -39,7 +44,7 @@ class ProductoControllerTest {
 	@Test
 	@DisplayName("Should return product list")
 	void shouldReturnProductList() throws Exception {
-		when(productoService.listarProductos(null, null)).thenReturn(List.of(
+		when(productoService.listarProductos(eq(null), eq(null), eq(null), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
 				new ProductoResponse(
 						1L,
 						"Cafe de Altura 250g",
@@ -49,13 +54,27 @@ class ProductoControllerTest {
 						"https://images.unsplash.com/photo-1447933601403-0c6688de566e",
 						true,
 						1L,
-						"Cafe")));
+						"Cafe"))));
 
 		mockMvc.perform(get("/api/productos"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$[0].id").value(1))
-				.andExpect(jsonPath("$[0].nombre").value("Cafe de Altura 250g"))
-				.andExpect(jsonPath("$[0].categoriaNombre").value("Cafe"));
+				.andExpect(jsonPath("$.content[0].id").value(1))
+				.andExpect(jsonPath("$.content[0].nombre").value("Cafe de Altura 250g"))
+				.andExpect(jsonPath("$.content[0].categoriaNombre").value("Cafe"));
+	}
+
+	@Test
+	@DisplayName("Should pass product filters to service")
+	void shouldPassProductFiltersToService() throws Exception {
+		when(productoService.listarProductos(eq(1L), eq(true), eq(true), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
+
+		mockMvc.perform(get("/api/productos")
+						.param("categoria", "1")
+						.param("activos", "true")
+						.param("disponible", "true"))
+				.andExpect(status().isOk());
+
+		verify(productoService).listarProductos(eq(1L), eq(true), eq(true), any(Pageable.class));
 	}
 
 	@Test

@@ -3,11 +3,12 @@ package com.cafedebarrio.backend.service;
 import com.cafedebarrio.backend.dto.producto.request.ProductoRequest;
 import com.cafedebarrio.backend.dto.producto.response.ProductoDetalleResponse;
 import com.cafedebarrio.backend.dto.producto.response.ProductoResponse;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ProductoService {
 
-	List<ProductoResponse> listarProductos(Long categoriaId, Boolean soloActivos);
+	Page<ProductoResponse> listarProductos(Long categoriaId, Boolean soloActivos, Boolean disponible, Pageable pageable);
 
 	ProductoDetalleResponse obtenerProductoPorId(Long id);
 
