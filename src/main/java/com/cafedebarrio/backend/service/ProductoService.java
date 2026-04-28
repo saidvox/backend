@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductoService {
 
-	Page<ProductoResponse> listarProductos(Long categoriaId, Boolean soloActivos, Boolean disponible, Pageable pageable);
+	Page<ProductoResponse> listarProductos(Long categoriaId, String nombre, Boolean soloActivos, Boolean disponible, Pageable pageable);
 
 	ProductoDetalleResponse obtenerProductoPorId(Long id);
 

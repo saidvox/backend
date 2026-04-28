@@ -44,7 +44,7 @@ class ProductoControllerTest {
 	@Test
 	@DisplayName("Should return product list")
 	void shouldReturnProductList() throws Exception {
-		when(productoService.listarProductos(eq(null), eq(null), eq(null), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
+		when(productoService.listarProductos(eq(null), eq(null), eq(null), eq(null), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
 				new ProductoResponse(
 						1L,
 						"Cafe de Altura 250g",
@@ -66,7 +66,7 @@ class ProductoControllerTest {
 	@Test
 	@DisplayName("Should pass product filters to service")
 	void shouldPassProductFiltersToService() throws Exception {
-		when(productoService.listarProductos(eq(1L), eq(true), eq(true), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
+		when(productoService.listarProductos(eq(1L), eq(null), eq(true), eq(true), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
 		mockMvc.perform(get("/api/productos")
 						.param("categoria", "1")
@@ -74,7 +74,7 @@ class ProductoControllerTest {
 						.param("disponible", "true"))
 				.andExpect(status().isOk());
 
-		verify(productoService).listarProductos(eq(1L), eq(true), eq(true), any(Pageable.class));
+		verify(productoService).listarProductos(eq(1L), eq(null), eq(true), eq(true), any(Pageable.class));
 	}
 
 	@Test

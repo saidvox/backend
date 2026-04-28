@@ -55,6 +55,8 @@ public class ProductoController {
 	public org.springframework.data.domain.Page<ProductoResponse> listarProductos(
 			@Parameter(description = "Id de la categoria para filtrar productos", example = "1")
 			@RequestParam(required = false) Long categoria,
+			@Parameter(description = "Texto para buscar productos por nombre", example = "cafe")
+			@RequestParam(required = false) String nombre,
 			@Parameter(description = "Indica si solo se deben listar productos activos", example = "true")
 			@RequestParam(required = false) Boolean activos,
 			@Parameter(description = "Indica si solo se deben listar productos con stock mayor a cero", example = "true")
@@ -65,7 +67,7 @@ public class ProductoController {
 			@RequestParam(defaultValue = "10") int size
 	) {
 		org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-		return productoService.listarProductos(categoria, activos, disponible, pageable);
+		return productoService.listarProductos(categoria, nombre, activos, disponible, pageable);
 	}
 
 	@GetMapping("/{id}")

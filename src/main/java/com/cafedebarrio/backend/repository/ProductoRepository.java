@@ -33,12 +33,14 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 			select p
 			from Producto p
 			where (:categoriaId is null or p.categoria.id = :categoriaId)
+			  and (:nombre is null or lower(p.nombre) like lower(concat('%', :nombre, '%')))
 			  and (:soloActivos = false or p.activo = true)
 			  and (:disponible = false or p.stock > 0)
 			order by p.nombre asc
 			""")
 	Page<Producto> buscarCatalogo(
 			@Param("categoriaId") Long categoriaId,
+			@Param("nombre") String nombre,
 			@Param("soloActivos") boolean soloActivos,
 			@Param("disponible") boolean disponible,
 			Pageable pageable

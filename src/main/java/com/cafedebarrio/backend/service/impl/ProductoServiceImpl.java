@@ -34,10 +34,17 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<ProductoResponse> listarProductos(Long categoriaId, Boolean soloActivos, Boolean disponible, Pageable pageable) {
+	public Page<ProductoResponse> listarProductos(Long categoriaId, String nombre, Boolean soloActivos, Boolean disponible, Pageable pageable) {
+		String nombreNormalizado = nombre == null || nombre.isBlank() ? null : nombre.trim();
 		boolean filtrarActivos = soloActivos == null || soloActivos;
 		boolean filtrarDisponibles = Boolean.TRUE.equals(disponible);
-		Page<Producto> productos = productoRepository.buscarCatalogo(categoriaId, filtrarActivos, filtrarDisponibles, pageable);
+		Page<Producto> productos = productoRepository.buscarCatalogo(
+				categoriaId,
+				nombreNormalizado,
+				filtrarActivos,
+				filtrarDisponibles,
+				pageable
+		);
 
 		return productos.map(productoMapper::toResponse);
 	}
