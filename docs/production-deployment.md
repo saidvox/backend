@@ -10,8 +10,12 @@ Reemplaza `api.tu-dominio.com` por tu dominio real.
 
 - `Dockerfile`: build multi-stage con Maven y runtime `eclipse-temurin:21-jre-alpine`.
 - `docker-compose.yml`: backend Spring Boot + PostgreSQL + healthchecks.
-- `.env.example`: variables necesarias para local/Coolify.
-- `scripts/deploy-compose.sh`: despliegue manual opcional sin Coolify.
+- `.env.example`: variables necesarias para produccion.
+
+El proyecto queda con solo dos modos:
+
+- `local`: para tu PC, usa H2 en memoria.
+- `prod`: para Docker/Coolify/servidor, usa PostgreSQL.
 
 ## Variables requeridas
 
@@ -26,14 +30,7 @@ APP_ADMIN_PASSWORD=usa_un_password_largo
 JWT_SECRET=usa_un_secret_largo_minimo_32_caracteres
 ```
 
-Opcionales:
-
-```env
-PGADMIN_EMAIL=admin@cafedebarrio.com
-PGADMIN_PASSWORD=solo_si_activas_el_perfil_tools
-```
-
-## Verificacion local con Docker Compose
+## Verificacion de produccion con Docker Compose
 
 ```bash
 cd backend
@@ -42,12 +39,6 @@ cp .env.example .env
 docker compose up --build -d
 docker compose logs -f backend
 curl http://localhost:8080/actuator/health
-```
-
-Para levantar pgAdmin localmente:
-
-```bash
-docker compose --profile tools up -d pgadmin
 ```
 
 ## Coolify

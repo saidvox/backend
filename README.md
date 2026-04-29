@@ -9,13 +9,13 @@ Backend REST de `Cafe de Barrio` construido con Spring Boot 4, JPA, MapStruct, S
 - Spring Security + JWT Bearer
 - Spring Data JPA
 - H2 para `local`
-- PostgreSQL para `docker`
+- PostgreSQL para `prod`
 - Swagger UI
 
 ## Perfiles
 
 - `local`: corre desde tu IDE o Maven con H2 en memoria.
-- `docker`: corre en contenedores y usa PostgreSQL.
+- `prod`: corre en Docker/Coolify y usa PostgreSQL.
 
 ## Levantar en local
 

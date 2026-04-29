@@ -1,7 +1,7 @@
 spring:
   config:
     activate:
-      on-profile: docker
+      on-profile: prod
 
   datasource:
     url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:cafe_de_barrio}
@@ -18,5 +18,5 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        "[format_sql]": true
+        "[format_sql]": false
     show-sql: false
