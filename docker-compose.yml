@@ -1,18 +1,15 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: cafe-de-barrio-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME:-cafe_de_barrio}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${DB_NAME:?cafe_de_barrio}
+      POSTGRES_USER: ${DB_USER:?postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-cafe_de_barrio}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,7 +17,8 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:9.2
-    container_name: cafe-de-barrio-pgadmin
+    profiles:
+      - tools
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@cafedebarrio.com}
@@ -39,18 +37,29 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cafe-de-barrio-backend
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      DB_NAME: ${DB_NAME:-cafe_de_barrio}
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      SERVER_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:?cafe_de_barrio}
+      DB_USER: ${DB_USER:?postgres}
+      DB_PASSWORD: ${DB_PASSWORD:?}
+      APP_ADMIN_USERNAME: ${APP_ADMIN_USERNAME:?admin}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:?}
+      JWT_SECRET: ${JWT_SECRET:?}
     ports:
       - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
 
 volumes:
   postgres_data:

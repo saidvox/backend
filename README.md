@@ -73,6 +73,13 @@ Authorization: Bearer TU_TOKEN
 mvn test
 ```
 
+## Docker y produccion
+
+El backend incluye Dockerfile multi-stage, Docker Compose con PostgreSQL,
+healthchecks y una guia para Coolify + Cloudflare Tunnel:
+
+- [`docs/production-deployment.md`](docs/production-deployment.md)
+
 ## Coleccion de endpoints
 
 El archivo `api-collection.http` incluye ejemplos de las rutas publicas y administrativas.

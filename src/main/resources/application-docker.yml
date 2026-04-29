@@ -4,7 +4,7 @@ spring:
       on-profile: docker
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/${DB_NAME:cafe_de_barrio}
+    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:cafe_de_barrio}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
@@ -19,4 +19,4 @@ spring:
     properties:
       hibernate:
         "[format_sql]": true
-    show-sql: true
+    show-sql: false

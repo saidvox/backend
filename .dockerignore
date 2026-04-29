@@ -5,3 +5,9 @@ target
 HELP.md
 *.log
 .env
+.env.*
+!.env.example
+docker/pgadmin
+README.md
+api-collection.http
+skills-lock.json
