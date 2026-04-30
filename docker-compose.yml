@@ -31,7 +31,7 @@ services:
       APP_ADMIN_USERNAME: ${APP_ADMIN_USERNAME:?admin}
       APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:?}
       JWT_SECRET: ${JWT_SECRET:?}
-    ports:
+    expose:
       - "8080"
     depends_on:
       postgres:
