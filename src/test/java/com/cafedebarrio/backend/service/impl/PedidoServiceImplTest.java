@@ -91,8 +91,8 @@ class PedidoServiceImplTest {
 		Pedido pedidoNuevo = Pedido.builder().build();
 
 		when(pedidoMapper.toEntity(request)).thenReturn(pedidoNuevo);
-		when(productoRepository.findById(1L)).thenReturn(Optional.of(cafeAltura));
-		when(productoRepository.findById(4L)).thenReturn(Optional.of(cafeGeisha));
+		when(productoRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(cafeAltura));
+		when(productoRepository.findByIdForUpdate(4L)).thenReturn(Optional.of(cafeGeisha));
 		when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> {
 			Pedido pedido = invocation.getArgument(0);
 			if (pedido.getEstado() == null) {
@@ -142,7 +142,7 @@ class PedidoServiceImplTest {
 				.build();
 
 		when(pedidoMapper.toEntity(request)).thenReturn(Pedido.builder().build());
-		when(productoRepository.findById(1L)).thenReturn(Optional.of(producto));
+		when(productoRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(producto));
 
 		assertThatThrownBy(() -> pedidoService.crearPedido(request))
 				.isInstanceOf(StockInsuficienteException.class)

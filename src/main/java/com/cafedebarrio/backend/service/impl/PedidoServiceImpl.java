@@ -73,7 +73,7 @@ public class PedidoServiceImpl implements PedidoService {
 		List<Long> productosActualizados = new ArrayList<>();
 
 		for (PedidoItemRequest item : pedidoRequest.items()) {
-			Producto producto = productoRepository.findById(item.productoId())
+			Producto producto = productoRepository.findByIdForUpdate(item.productoId())
 					.orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + item.productoId()));
 
 			if (Boolean.FALSE.equals(producto.getActivo())) {
