@@ -38,13 +38,20 @@ public class ProductoServiceImpl implements ProductoService {
 		String nombreNormalizado = nombre == null || nombre.isBlank() ? null : nombre.trim();
 		boolean filtrarActivos = soloActivos == null || soloActivos;
 		boolean filtrarDisponibles = Boolean.TRUE.equals(disponible);
-		Page<Producto> productos = productoRepository.buscarCatalogo(
-				categoriaId,
-				nombreNormalizado,
-				filtrarActivos,
-				filtrarDisponibles,
-				pageable
-		);
+		Page<Producto> productos = nombreNormalizado == null
+				? productoRepository.buscarCatalogoSinNombre(
+						categoriaId,
+						filtrarActivos,
+						filtrarDisponibles,
+						pageable
+				)
+				: productoRepository.buscarCatalogoConNombre(
+						categoriaId,
+						nombreNormalizado,
+						filtrarActivos,
+						filtrarDisponibles,
+						pageable
+				);
 
 		return productos.map(productoMapper::toResponse);
 	}

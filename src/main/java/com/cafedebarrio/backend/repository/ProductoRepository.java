@@ -38,9 +38,25 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 			  and (:disponible = false or p.stock > 0)
 			order by p.nombre asc
 			""")
-	Page<Producto> buscarCatalogo(
+	Page<Producto> buscarCatalogoConNombre(
 			@Param("categoriaId") Long categoriaId,
 			@Param("nombre") String nombre,
+			@Param("soloActivos") boolean soloActivos,
+			@Param("disponible") boolean disponible,
+			Pageable pageable
+	);
+
+	@EntityGraph(attributePaths = "categoria")
+	@Query("""
+			select p
+			from Producto p
+			where (:categoriaId is null or p.categoria.id = :categoriaId)
+			  and (:soloActivos = false or p.activo = true)
+			  and (:disponible = false or p.stock > 0)
+			order by p.nombre asc
+			""")
+	Page<Producto> buscarCatalogoSinNombre(
+			@Param("categoriaId") Long categoriaId,
 			@Param("soloActivos") boolean soloActivos,
 			@Param("disponible") boolean disponible,
 			Pageable pageable
