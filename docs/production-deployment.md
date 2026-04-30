@@ -2,7 +2,7 @@
 
 Esta guia cubre el flujo:
 
-`git push -> Coolify -> Docker build -> Docker Compose -> Cloudflare Tunnel -> dominio`
+`git push -> Coolify -> Docker build -> Docker Compose -> Traefik/Coolify -> Cloudflare Tunnel -> dominio`
 
 Reemplaza `api.tu-dominio.com` por tu dominio real.
 
@@ -84,7 +84,15 @@ Opcion webhook:
 
 ## Cloudflare Tunnel
 
-Puedes usar Tunnel con routing hacia el puerto donde Coolify expone el backend.
+En este proyecto Coolify publica el backend por Traefik. El contenedor Spring Boot
+escucha internamente en `8080`, pero el trafico publico entra por HTTPS a Traefik.
+
+Arquitectura final:
+
+`Frontend -> https://api.tu-dominio.com -> Cloudflare Tunnel -> https://localhost:443 -> Traefik/Coolify -> backend:8080`
+
+Por eso el Tunnel debe apuntar a `https://localhost:443`, no directamente a
+`localhost:8080`.
 
 ### Instalacion de cloudflared en Ubuntu
 
@@ -110,9 +118,21 @@ credentials-file: /home/USUARIO/.cloudflared/TUNNEL_UUID.json
 
 ingress:
   - hostname: api.tu-dominio.com
-    service: http://localhost:8080
+    service: https://localhost:443
+    originRequest:
+      noTLSVerify: true
   - service: http_status:404
 ```
+
+Equivalente en el dashboard de Cloudflare Tunnel:
+
+- Public hostname: `api.tu-dominio.com`
+- Service type: `HTTPS`
+- Service URL: `localhost:443`
+- Additional application settings -> TLS -> No TLS Verify: `ON`
+
+No uses `http://localhost:80` si Coolify/Traefik redirige HTTP a HTTPS, porque
+puede crear un bucle de redireccion.
 
 Crea el DNS del tunnel:
 
