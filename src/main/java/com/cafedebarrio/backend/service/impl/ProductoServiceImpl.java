@@ -7,9 +7,12 @@ import com.cafedebarrio.backend.entity.Categoria;
 import com.cafedebarrio.backend.entity.Producto;
 import com.cafedebarrio.backend.exception.ResourceNotFoundException;
 import com.cafedebarrio.backend.mapper.ProductoMapper;
+import com.cafedebarrio.backend.realtime.CatalogoActualizadoEvent;
 import com.cafedebarrio.backend.repository.CategoriaRepository;
 import com.cafedebarrio.backend.repository.ProductoRepository;
 import com.cafedebarrio.backend.service.ProductoService;
+import java.util.List;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,15 +24,18 @@ public class ProductoServiceImpl implements ProductoService {
 	private final ProductoRepository productoRepository;
 	private final CategoriaRepository categoriaRepository;
 	private final ProductoMapper productoMapper;
+	private final ApplicationEventPublisher eventPublisher;
 
 	public ProductoServiceImpl(
 			ProductoRepository productoRepository,
 			CategoriaRepository categoriaRepository,
-			ProductoMapper productoMapper
+			ProductoMapper productoMapper,
+			ApplicationEventPublisher eventPublisher
 	) {
 		this.productoRepository = productoRepository;
 		this.categoriaRepository = categoriaRepository;
 		this.productoMapper = productoMapper;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -71,6 +77,7 @@ public class ProductoServiceImpl implements ProductoService {
 		producto.setCategoria(categoria);
 
 		Producto productoGuardado = productoRepository.save(producto);
+		eventPublisher.publishEvent(new CatalogoActualizadoEvent(List.of(productoGuardado.getId())));
 		return productoMapper.toResponse(productoGuardado);
 	}
 
@@ -88,6 +95,7 @@ public class ProductoServiceImpl implements ProductoService {
 		producto.setActivo(productoRequest.activo());
 		producto.setCategoria(categoria);
 
+		eventPublisher.publishEvent(new CatalogoActualizadoEvent(List.of(producto.getId())));
 		return productoMapper.toResponse(producto);
 	}
 
@@ -96,6 +104,7 @@ public class ProductoServiceImpl implements ProductoService {
 	public void desactivarProducto(Long id) {
 		Producto producto = obtenerProductoEntidad(id);
 		producto.setActivo(false);
+		eventPublisher.publishEvent(new CatalogoActualizadoEvent(List.of(producto.getId())));
 	}
 
 	private Producto obtenerProductoEntidad(Long id) {

@@ -12,11 +12,15 @@ import com.cafedebarrio.backend.exception.BusinessException;
 import com.cafedebarrio.backend.exception.ResourceNotFoundException;
 import com.cafedebarrio.backend.exception.StockInsuficienteException;
 import com.cafedebarrio.backend.mapper.PedidoMapper;
+import com.cafedebarrio.backend.realtime.PedidoActualizadoEvent;
+import com.cafedebarrio.backend.realtime.PedidoCreadoEvent;
 import com.cafedebarrio.backend.repository.PedidoRepository;
 import com.cafedebarrio.backend.repository.ProductoRepository;
 import com.cafedebarrio.backend.service.PedidoService;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +30,18 @@ public class PedidoServiceImpl implements PedidoService {
 	private final PedidoRepository pedidoRepository;
 	private final ProductoRepository productoRepository;
 	private final PedidoMapper pedidoMapper;
+	private final ApplicationEventPublisher eventPublisher;
 
 	public PedidoServiceImpl(
 			PedidoRepository pedidoRepository,
 			ProductoRepository productoRepository,
-			PedidoMapper pedidoMapper
+			PedidoMapper pedidoMapper,
+			ApplicationEventPublisher eventPublisher
 	) {
 		this.pedidoRepository = pedidoRepository;
 		this.productoRepository = productoRepository;
 		this.pedidoMapper = pedidoMapper;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -63,6 +70,7 @@ public class PedidoServiceImpl implements PedidoService {
 	public PedidoResponse crearPedido(PedidoRequest pedidoRequest) {
 		Pedido pedido = pedidoMapper.toEntity(pedidoRequest);
 		BigDecimal total = BigDecimal.ZERO;
+		List<Long> productosActualizados = new ArrayList<>();
 
 		for (PedidoItemRequest item : pedidoRequest.items()) {
 			Producto producto = productoRepository.findById(item.productoId())
@@ -88,10 +96,12 @@ public class PedidoServiceImpl implements PedidoService {
 			pedido.addDetalle(detallePedido);
 			total = total.add(subtotal);
 			producto.setStock(producto.getStock() - item.cantidad());
+			productosActualizados.add(producto.getId());
 		}
 
 		pedido.setTotal(total);
 		Pedido pedidoGuardado = pedidoRepository.save(pedido);
+		eventPublisher.publishEvent(new PedidoCreadoEvent(pedidoGuardado.getId(), productosActualizados));
 		return pedidoMapper.toResponse(pedidoGuardado);
 	}
 
@@ -102,6 +112,7 @@ public class PedidoServiceImpl implements PedidoService {
 				.orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con id: " + id));
 
 		pedido.setEstado(request.estado());
+		eventPublisher.publishEvent(new PedidoActualizadoEvent(id));
 		return pedidoMapper.toResponse(pedido);
 	}
 }
